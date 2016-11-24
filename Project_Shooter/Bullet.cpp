@@ -1,24 +1,29 @@
 #include "Bullet.h"
 
-Bullet::Bullet(int playerXpos, int playerYpos, int bulletSpeed) {
-  this->xpos = playerXpos;
-  this->ypos = playerYpos;
-  this->xspeed = bulletSpeed;
+Bullet::Bullet(int rowNum, int playerXpos, int playerYpos, int playerSize, double bulletSpeed) {
+  this->rowNum = rowNum;
+  xpos = playerXpos + playerSize;
+  ypos = playerYpos + playerSize / 2;
+  xspeed = bulletSpeed;
 }
 
 void Bullet::update() {
-  this->xpos += this->xspeed;
-  this->nextXpos = this->xpos + this->xspeed;
+  xpos += xspeed;
+  nextXpos = xpos + xspeed;
+}
+
+int Bullet::getRow() {
+  return rowNum;
 }
 
 double Bullet::getX() {
-  return this->xpos;
+  return xpos;
 }
 
 double Bullet::getY() {
-  return this->ypos;
+  return ypos;
 }
 
 double Bullet::getNextX() {
-  return this->nextXpos;
+  return nextXpos;
 }

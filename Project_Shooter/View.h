@@ -18,8 +18,14 @@ using namespace std;
 class View {
   public:
     View();
+    void drawWelcome();
+    void drawLoading();
+    void drawPause(int i);
+    void drawGameEnd();
     void drawPlayer(Player player);
-    void drawBullets(vector<Bullet> bullet);
-    void drawTargets(vector<Target> target);
+    void drawBullet(Bullet bullet);
+    void drawTarget(Target target);
+    void clearScreen();
+    void update();
 };
 #endif

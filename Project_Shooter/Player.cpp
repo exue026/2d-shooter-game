@@ -2,28 +2,39 @@
 #include "constants.h"
 
 Player::Player() {
-  this->xpos = 2;
-  this->yspeed = screenHeight / maxRow;
-  this->sideLength = 0.6*yspeed;
-  this->ypos = screenHeight % maxRow / 2+(yspeed-sideLength)/2+1;
+  xpos = 2;
+  yspeed = screenHeight / maxRow;
+  sideLength = 0.6 * yspeed;
+  ypos = screenHeight % maxRow / 2 + (yspeed - sideLength) / 2 + 1;
+  rowNum = 0;
 }
 
 void Player::moveUp() {
-  if (ypos - yspeed >= 0) ypos -= yspeed;
+  if (ypos - yspeed >= 0) {
+    ypos -= yspeed;
+    rowNum--;
+  }
 }
 
 void Player::moveDown() {
-  if (ypos + yspeed <= screenHeight) ypos += yspeed;
+  if (ypos + yspeed <= screenHeight) {
+    ypos += yspeed;
+    rowNum++;
+  }
 }
 
-int Player::getX(){
-  return xpos;  
+int Player::getX() {
+  return xpos;
 }
 
-int Player::getY(){
+int Player::getY() {
   return ypos;
 }
 
-int Player::getSize(){
+int Player::getSize() {
   return sideLength;
+}
+
+int Player::getRow(){
+  return rowNum;
 }
