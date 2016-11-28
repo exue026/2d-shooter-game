@@ -48,15 +48,15 @@ void inputTick() {
 }
 int test;
 void setup() {
-  // put your setup code here, to run once:
+  
   OrbitOledInit();
   inputInit();
-  Serial.begin(9600);//used for testing
-  delay(2000);//used for testing
+  Serial.begin(9600);
+  delay(2000);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
   inputTick();
   gameController.gameTick();
 }

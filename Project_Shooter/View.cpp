@@ -10,14 +10,14 @@ View::View() {
 }
 
 void View::drawWelcome() {
-  
-    for (int i = 5; i < screenWidth - 10; i+=10) {
-      OrbitOledMoveTo(i, 5);
-      OrbitOledDrawString("~");
-      OrbitOledMoveTo(i, screenHeight - 7);
-      OrbitOledDrawString("~");
-    }
-  
+
+  for (int i = 5; i < screenWidth - 10; i += 10) {
+    OrbitOledMoveTo(i, 5);
+    OrbitOledDrawString("~");
+    OrbitOledMoveTo(i, screenHeight - 7);
+    OrbitOledDrawString("~");
+  }
+
   OrbitOledMoveTo(screenWidth / 4 + 2, screenHeight / 2);
   OrbitOledDrawString("Welcome");
 }
@@ -53,46 +53,25 @@ void View::drawInventory(int cursorY, int inventoryPage, vector<Weapon>&weapons)
   OrbitOledDrawString("Inventory");
 
   for (int k = 2; k > 0; k--) {
-    if (k == 2) 
+    if (k == 2)
       OrbitOledMoveTo(screenWidth / 6, 10);
-    else 
+    else
       OrbitOledMoveTo(screenWidth / 6, 10 + screenHeight / 3);
-      
+
     if (weapons[(inventoryPage * 2) - k].isUnlocked()) {
-    OrbitOledDrawString(weapons[(inventoryPage * 2) - k].name);
-    OrbitOledMoveTo(screenWidth - 65, k == 2? 10 : 10 + screenHeight / 3);
-    OrbitOledDrawString("#");
-    int digits = weapons[(inventoryPage * 2) - k].getBulletsRemaining() > 0? (int) log10 ((double) weapons[(inventoryPage * 2) - k].getBulletsRemaining()) + 1 : 1;
-    char ammunition[digits]; 
-    sprintf(ammunition, "%d", weapons[(inventoryPage * 2) - k].getBulletsRemaining());
-    OrbitOledDrawString(ammunition);
+      OrbitOledDrawString(weapons[(inventoryPage * 2) - k].name);
+      OrbitOledMoveTo(screenWidth - 65, k == 2 ? 10 : 10 + screenHeight / 3);
+      OrbitOledDrawString("#");
+      int digits = weapons[(inventoryPage * 2) - k].getBulletsRemaining() > 0 ? (int) log10 ((double) weapons[(inventoryPage * 2) - k].getBulletsRemaining()) + 1 : 1;
+      char ammunition[digits];
+      sprintf(ammunition, "%d", weapons[(inventoryPage * 2) - k].getBulletsRemaining());
+      OrbitOledDrawString(ammunition);
     }
   }
- /* 
-  OrbitOledMoveTo(screenWidth / 6, 10);
-  if (weapons[(inventoryPage * 2) - 2].isUnlocked()) {
-    OrbitOledDrawString(weapons[(inventoryPage * 2) - 2].name);
-    OrbitOledMoveTo(screenWidth - 65, 10);
-    OrbitOledDrawString("#");
-    int digits = weapons[(inventoryPage * 2) - 2].getBulletsRemaining() > 0? (int) log10 ((double) weapons[(inventoryPage * 2) - 2].getBulletsRemaining()) + 1 : 1;
-    char ammunition[digits]; 
-    sprintf(ammunition, "%d", weapons[(inventoryPage * 2) - 2].getBulletsRemaining());
-    OrbitOledDrawString(ammunition);
-  }
-  OrbitOledMoveTo(screenWidth / 6, 10 + screenHeight / 3);
-  if (weapons[(inventoryPage * 2) - 1].isUnlocked()) {
-    OrbitOledDrawString(weapons[(inventoryPage * 2) - 1].name);
-    OrbitOledMoveTo(screenWidth - 65, 10 + screenHeight / 3);
-    OrbitOledDrawString("#");
-    int digits = weapons[(inventoryPage * 2) - 1].getBulletsRemaining() > 0? (int) log10 ((double) weapons[(inventoryPage * 2) - 1].getBulletsRemaining()) + 1 : 1;
-    char ammunition[digits]; 
-    sprintf(ammunition, "%d", weapons[(inventoryPage * 2) - 1].getBulletsRemaining());
-    OrbitOledDrawString(ammunition);
-  }
-  */
+
   OrbitOledMoveTo(0, cursorY);
   OrbitOledDrawString("->");
-  
+
 }
 
 void View::drawGameEnd(int score) {
@@ -101,7 +80,7 @@ void View::drawGameEnd(int score) {
   OrbitOledDrawString("Game Over!!");
   OrbitOledMoveTo(0, 15);
   OrbitOledDrawString("Final score: ");
-  int digits = score > 0 ? (int) log10 ((double) score) + 1 : score < 0? (int) log10 ((double) -score) + 1 : 1;
+  int digits = score > 0 ? (int) log10 ((double) score) + 1 : score < 0 ? (int) log10 ((double) - score) + 1 : 1;
   char finalScore[digits];
   sprintf(finalScore, "%d", score);
   OrbitOledMoveTo(screenWidth - 35, 15);
@@ -127,8 +106,8 @@ void View::drawBullet(Bullet bullet) {
 }
 
 void View::drawBulletCount(int bulletsRemaining) {
-  int digits = bulletsRemaining > 0? (int) log10 ((double) bulletsRemaining) + 1 : 1;
-  char count[digits]; 
+  int digits = bulletsRemaining > 0 ? (int) log10 ((double) bulletsRemaining) + 1 : 1;
+  char count[digits];
   sprintf(count, "%d", bulletsRemaining);
   OrbitOledMoveTo(screenWidth - 30, screenHeight - 8);
   OrbitOledDrawString(count);
