@@ -48,7 +48,8 @@ class Controller {
     void updateScreen();
     void updateCursor();
     void initWeaponAmmo();
-
+    void unlockWeapons();
+    
     struct Cursor {
       int y;
       int yShift;

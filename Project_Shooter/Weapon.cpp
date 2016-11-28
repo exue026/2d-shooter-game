@@ -1,12 +1,13 @@
 #include "Weapon.h"
 
 
-Weapon::Weapon(int rpm, int magSize, double velocity, char *name, int scoreUnlock) {
+Weapon::Weapon(int rpm, int magSize, double velocity, char *name, int scoreUnlocked) {
   this->rpm = rpm;
   this->magSize = magSize;
   this->velocity = velocity;
   this->name = name;
-  this->scoreUnlock = scoreUnlock;
+  this->scoreUnlocked = scoreUnlocked;
+  this->state = false;
 }
 
 int Weapon::getRpm() {
@@ -33,6 +34,17 @@ void Weapon::decreaseBullets() {
 
 int Weapon::getBulletsRemaining() {
   return bulletsRemaining;
+}
+
+int Weapon::getScoreUnlocked() {
+  return scoreUnlocked;
+}
+
+void Weapon::setState(bool state) {
+  this->state = state;
+}
+bool Weapon::isUnlocked() {
+  return state;
 }
 /* isn't working
 char* Weapon::getName() {

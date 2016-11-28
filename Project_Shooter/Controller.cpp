@@ -1,6 +1,7 @@
 #include <math.h>
 #include "Controller.h"
 #include "constants.h"
+#include <string.h>
 
 static enum Pages {
   Welcome,
@@ -70,11 +71,14 @@ void Controller::handlePageLoading() {
 
 void Controller::initWeaponAmmo() {
   for (int k = 0; k < weapons.size(); k++) {
-     weapons[k].setBulletsRemaining(weapons[k].getMagSize() * lvlNum); //not working very well
+     weapons[k].setBulletsRemaining(weapons[k].getMagSize() * lvlNum * 0.5); 
   }
 }
 
 void Controller::handlePageGame() {
+
+  unlockWeapons();
+  
   //check input
   if (buttonIsPressed[0])
     myPlayer.moveUp();
@@ -144,6 +148,14 @@ void Controller::handlePageInventory() {
   }
 }
 
+void Controller::unlockWeapons() {
+  for(int k = 0; k < weapons.size(); k++) {
+    if (myPlayer.getScore() >= weapons[k].getScoreUnlocked() && !weapons[k].isUnlocked()) {
+      weapons[k].setState(true);
+    }
+  }
+}
+
 void Controller::updateCursor() {
 
   if (buttonIsPressed[0]) {
@@ -151,25 +163,21 @@ void Controller::updateCursor() {
       cursor.y -= cursor.yShift;
       selectedWeapon--;
     }
-    else {
-      if (inventoryPage != 1) {
+    else if (inventoryPage != 1) {
         inventoryPage--;
         cursor.y = 10 + cursor.yShift;
         selectedWeapon--;
-      }
     }
   }
-  if (buttonIsPressed[1]) {
+  if (buttonIsPressed[1] && ((strcmp((*selectedWeapon).name, weapons[weapons.size()-1].name) == 0) || ((*(selectedWeapon + 1)).isUnlocked()))) {
     if (cursor.y + cursor.yShift <= 10 + cursor.yShift) {
       cursor.y += cursor.yShift;
       selectedWeapon++;
     }
-    else {
-      if (inventoryPage != 3) {
+    else if (inventoryPage != 3) {
         inventoryPage++;
         cursor.y = 10;
         selectedWeapon++;
-      }
     }
   }
 }

@@ -45,25 +45,28 @@ void View::drawInventory(int cursorY, int inventoryPage, vector<Weapon>&weapons)
   OrbitOledDrawString("Inventory");
 
   OrbitOledMoveTo(screenWidth / 4, 10);
-  if (inventoryPage == 1) {
+  if (inventoryPage == 1 && weapons[0].isUnlocked()) {
     OrbitOledDrawString(weapons[0].name);
   }
-  else if (inventoryPage == 2) {
+  else if (inventoryPage == 2 && weapons[2].isUnlocked()) {
     OrbitOledDrawString(weapons[2].name);
   }
   else {
-    OrbitOledDrawString(weapons[4].name);
+    if (weapons[4].isUnlocked()) {
+      OrbitOledDrawString(weapons[4].name);
+    }
   }
-
   OrbitOledMoveTo(screenWidth / 4, 10 + screenHeight / 3);
-  if (inventoryPage == 1) {
+  if (inventoryPage == 1 && weapons[1].isUnlocked()) {
     OrbitOledDrawString(weapons[1].name);
   }
-  else if (inventoryPage == 2) {
+  else if (inventoryPage == 2 && weapons[3].isUnlocked()) {
     OrbitOledDrawString(weapons[3].name);
   }
   else {
-    OrbitOledDrawString(weapons[5].name);
+    if (weapons[5].isUnlocked()) {
+      OrbitOledDrawString(weapons[5].name);
+    }
   }
 
   OrbitOledMoveTo(0, cursorY);
@@ -115,7 +118,7 @@ void View::drawBulletCount(int bulletsRemaining) {
   }
   char count[digits + 1]; //+1 for the null char
   sprintf(count, "%d", bulletsRemaining);
-  OrbitOledMoveTo(screenWidth - 26, screenHeight - 8);
+  OrbitOledMoveTo(screenWidth - 30, screenHeight - 8);
   OrbitOledDrawString(count);
 }
 
