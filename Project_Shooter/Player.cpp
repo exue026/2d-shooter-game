@@ -7,20 +7,7 @@ Player::Player() {
   sideLength = 0.6 * yspeed;
   ypos = screenHeight % maxRow / 2 + (yspeed - sideLength) / 2 + 1;
   rowNum = 0;
-}
-
-void Player::moveUp() {
-  if (ypos - yspeed >= 0) {
-    ypos -= yspeed;
-    rowNum--;
-  }
-}
-
-void Player::moveDown() {
-  if (ypos + yspeed <= screenHeight) {
-    ypos += yspeed;
-    rowNum++;
-  }
+  score = 0;
 }
 
 int Player::getX() {
@@ -35,6 +22,28 @@ int Player::getSize() {
   return sideLength;
 }
 
-int Player::getRow(){
+int Player::getRow() {
   return rowNum;
+}
+
+int Player::getScore() {
+  return score;
+}
+
+int Player::addScore(int increment) {
+  score += increment;
+}
+
+void Player::moveUp() {
+  if (ypos - yspeed >= 0) {
+    ypos -= yspeed;
+    rowNum--;
+  }
+}
+
+void Player::moveDown() {
+  if (ypos + yspeed <= screenHeight) {
+    ypos += yspeed;
+    rowNum++;
+  }
 }

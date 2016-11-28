@@ -1,7 +1,6 @@
+#include <math.h>
 #include "Controller.h"
 #include "constants.h"
-
-using namespace std;
 
 static enum Pages {
   Welcome,
@@ -13,31 +12,66 @@ static enum Pages {
 } currentPage = Welcome;
 
 
-
 Controller::Controller() {
-  lvlNum = 1;
-  counter = 0;   //testing var
+  lvlNum = 0;
+  spawnSpeed = 1800;
+  timeEnterLoading = 0;
+  timeLastSpawned = 0;
+  timeLastFired = 0;
+  timeLastDrawn = 0;
+  currentTime = 0;
+  inventoryPage = 1;
+
   for (int i = 0; i < buttonNum; i++) {
     buttonIsPressed[i] = 0;
   }
   for (int i = 0; i < switchNum; i++) {
     switchIsOn[i] = 0;
   }
+
+  weapons.push_back(Weapon(83, 20, 0.2, "m1911", -100));  //m1911 - default gun
+  weapons.push_back(Weapon(100, 29, 0.1, "ump", 20)); //ump - unlocked when score is 30
+  weapons.push_back(Weapon(30, 12, 1.2, "AWP", 30)); //AWP
+  weapons.push_back(Weapon(200, 40, 0.4, "AK47", 70)); //ak47
+  weapons.push_back(Weapon(250, 50, 0.3, "famas", 80)); //famas
+  weapons.push_back(Weapon(120, 100, 0.08,"RPK", 100)); //rpk
+
+  selectedWeapon = &(weapons[0]);
+
+  cursor.y = 10;
+  cursor.yShift = screenHeight / 3;
 }
 
 void Controller::handlePageWelcome() {
-  gameView.clearScreen();
+  gameView.clearBuffer();
   gameView.drawWelcome();
-  gameView.update();
+  updateScreen();
   if (switchIsOn[1])
     currentPage = Loading;
 }
 
 void Controller::handlePageLoading() {
-   gameView.clearScreen();
-   gameView.drawLoading();
-   gameView.update();
-   currentPage = Game;
+  timeEnterLoading = getTime();
+  lvlNum++;
+  initWeaponAmmo();
+  if (spawnSpeed <= 200)
+    spawnSpeed = 200;
+  else
+    spawnSpeed -= 200;
+
+  targetsSpawned = 0;
+  while (getTime() - timeEnterLoading <= 2000) {
+    gameView.clearBuffer();
+    gameView.drawLoading(lvlNum);
+    updateScreen();
+  }
+  currentPage = Game;
+}
+
+void Controller::initWeaponAmmo() {
+  for (int k = 0; k < weapons.size(); k++) {
+     weapons[k].setBulletsRemaining(weapons[k].getMagSize() * lvlNum); //not working very well
+  }
 }
 
 void Controller::handlePageGame() {
@@ -47,19 +81,22 @@ void Controller::handlePageGame() {
   if (buttonIsPressed[1])
     myPlayer.moveDown();
   if (buttonIsPressed[2])
-    bullets.push_back(Bullet(myPlayer.getRow(), myPlayer.getX(), myPlayer.getY(), myPlayer.getSize(), 0.4));
-  if (!switchIsOn[1])
+    fireBullet((*selectedWeapon).getRpm(), (*selectedWeapon).getVelocity());
+  if (!switchIsOn[1]) {
+    timeFlashDrawn = getTime();
     currentPage = Pause;
+  }
 
   //check if needs to spawn target
-  if (counter % 200 == 0) {
-    targets.push_back(Target(1));
-    counter = 0;
+  if (targetsSpawned < lvlNum * 10 && (timeLastSpawned == 0 || currentTime - timeLastSpawned >= spawnSpeed)) {
+    targets.push_back(Target(lvlNum));
+    targetsSpawned++;
+    timeLastSpawned = getTime();
   }
-  counter++;
 
   //draw and update target and bullet positions
-  gameView.clearScreen();
+  
+  gameView.clearBuffer();
   for (int i = 0; i < targets.size(); i++) {
     targets[i].update();
     gameView.drawTarget(targets[i]);
@@ -68,45 +105,92 @@ void Controller::handlePageGame() {
     bullets[i].update();
     gameView.drawBullet(bullets[i]);
   }
-  //draw player, target, and bullets
-  gameView.drawPlayer(myPlayer);
-  gameView.update();
 
-  //collision detection
+  gameView.drawBulletCount((*selectedWeapon).getBulletsRemaining());
+
+  //draw player, target, and bullets, and bullet counter
+  gameView.drawPlayer(myPlayer);
+  updateScreen();
+
   detectCollision();
+
+  if (targets.size() == 0 && targetsSpawned >= lvlNum * 10) {
+    currentPage = Loading;
+  }
 }
 
 void Controller::handlePagePause() {
-if (counter > 500)
-    counter = 0;
-  counter++;
-  gameView.clearScreen();
-  gameView.drawPause(counter < 350);
-  gameView.update();
-  if (switchIsOn[0] && switchIsOn[1])
+  currentTime = getTime();
+  if (currentTime - timeFlashDrawn >= 3000)
+    timeFlashDrawn = currentTime;
+  gameView.clearBuffer();
+  gameView.drawPause(currentTime - timeFlashDrawn <= 2000, myPlayer.getScore());
+  updateScreen();
+  if (switchIsOn[0] && !switchIsOn[1]) {
+    currentPage = Inventory;
+  }
+  if (!switchIsOn[0] && switchIsOn[1])
     currentPage = Game;
 }
 
 void Controller::handlePageInventory() {
+ 
+  updateCursor();
+  gameView.clearBuffer();
+  gameView.drawInventory(cursor.y, inventoryPage, weapons);
+  updateScreen();
+  if (!switchIsOn[0] && !switchIsOn[1]) {
+    currentPage = Pause;
+  }
+}
 
+void Controller::updateCursor() {
+
+  if (buttonIsPressed[0]) {
+    if (cursor.y - cursor.yShift >= 10) {
+      cursor.y -= cursor.yShift;
+      selectedWeapon--;
+    }
+    else {
+      if (inventoryPage != 1) {
+        inventoryPage--;
+        cursor.y = 10 + cursor.yShift;
+        selectedWeapon--;
+      }
+    }
+  }
+  if (buttonIsPressed[1]) {
+    if (cursor.y + cursor.yShift <= 10 + cursor.yShift) {
+      cursor.y += cursor.yShift;
+      selectedWeapon++;
+    }
+    else {
+      if (inventoryPage != 3) {
+        inventoryPage++;
+        cursor.y = 10;
+        selectedWeapon++;
+      }
+    }
+  }
 }
 
 void Controller::handlePageGameResult() {
-  gameView.clearScreen();
-  gameView.drawGameEnd();
+  gameView.clearBuffer();
+  gameView.drawGameEnd(myPlayer.getScore());
   gameView.update();
-  if(!switchIsOn[1]) {
+  if (!switchIsOn[1]) {
     currentPage = Welcome;
   }
 }
 
 void Controller::detectCollision() {
+  //detect if bullet exits right side of screen
   for (int i = 0; i < bullets.size(); i++) {
-    if (bullets[i].getNextX() >= screenWidth - 2) {
+    if (bullets[i].getNextX() >= screenWidth) {
       bullets.erase(bullets.begin() + i);
     }
   }
-
+  //detects if target exits left side of screen
   for (int i = 0; i < targets.size(); i++) {
     if (targets[i].getNextX() < 0) {
       targets.erase(targets.begin() + i);
@@ -114,16 +198,44 @@ void Controller::detectCollision() {
       return;
     }
   }
-  //target get row is the root of all evil
+  //detect if bullet collides with a target
   for (int i = 0; i < bullets.size(); i++) {
     for (int k = 0; k < targets.size(); k++) {
       if ((bullets[i].getRow() == targets[k].getRow()) && (bullets[i].getNextX() >= targets[k].getNextX())) {
         bullets.erase(bullets.begin() + i);
         targets.erase(targets.begin() + k);
+        myPlayer.addScore(scorePerTarget);
       }
     }
   }
 }
+
+void Controller::fireBullet(int rpm, double velocity) {
+
+  currentTime = getTime();
+  if ((currentTime - timeLastFired >= ((60 * 1000) / rpm)) && (*selectedWeapon).getBulletsRemaining() > 0) {
+    (*selectedWeapon).decreaseBullets();
+    bullets.push_back(Bullet(myPlayer.getRow(), myPlayer.getX(), myPlayer.getY(), myPlayer.getSize(), velocity));
+    timeLastFired = getTime();
+
+    if (scorePerBullet(lvlNum) <= -1)
+      myPlayer.addScore(scorePerBullet(lvlNum));
+    else
+      myPlayer.addScore(minScorePerBullet);
+  }
+}
+
+void Controller::updateScreen() {
+  currentTime = getTime();
+  if (timeLastDrawn == 0 || currentTime - timeLastDrawn > 33) {
+    gameView.update();
+  }
+}
+
+int Controller::scorePerBullet(int lvlNum) {
+  return (int)sqrt(0.75 * lvlNum) - 4.0;
+}
+
 
 
 void Controller::gameTick() {
@@ -156,3 +268,4 @@ void Controller::setButton(int i, bool value) {
 void Controller::setSwitch(int i, bool value) {
   switchIsOn[i] = value;
 }
+

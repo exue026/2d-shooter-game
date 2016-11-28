@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Target.h"
+#include "Weapon.h"
 #include "constants.h"
 
 using namespace std;
@@ -19,13 +20,15 @@ class View {
   public:
     View();
     void drawWelcome();
-    void drawLoading();
-    void drawPause(int i);
-    void drawGameEnd();
+    void drawLoading(int lvlNum);
+    void drawPause(int i, int score);
+    void drawInventory(int cursorY, int inventoryPage, vector<Weapon>&weapons);
+    void drawGameEnd(int score);
     void drawPlayer(Player player);
     void drawBullet(Bullet bullet);
     void drawTarget(Target target);
-    void clearScreen();
+    void drawBulletCount(int bulletsRemaining);
+    void clearBuffer();
     void update();
 };
 #endif

@@ -1,7 +1,10 @@
 #include <vector>
+#include <time.h>
 #include "Player.h"
 #include "View.h"
 #include "constants.h"
+#include "Weapon.h"
+
 
 #ifndef _CONTROLLER
 #define _CONTROLLER
@@ -9,13 +12,30 @@ class Controller {
   private:
     View gameView;
     Player myPlayer;
-    vector<Target>targets;
-    vector<Bullet>bullets;
+    std::vector<Target>targets;
+    std::vector<Bullet>bullets;
+    std::vector<Weapon>weapons;
+    Weapon *selectedWeapon;
+
+    const int scorePerTarget = 5;
+    const int minScorePerBullet = -1;
 
     bool buttonIsPressed[4];
     bool switchIsOn[2];
+
     int lvlNum;
-    int counter;//var used to test program, pls delete after use (current status: still in use)
+    int targetsSpawned;
+    int spawnSpeed;
+    int scorePerBullet(int lvlNum);
+    int inventoryPage;
+   
+
+    double timeLastSpawned;
+    double timeLastDrawn;
+    double timeFlashDrawn;
+    double timeEnterLoading;
+    double currentTime;
+    double timeLastFired;
 
     void handlePageWelcome();
     void handlePageLoading();
@@ -24,8 +44,18 @@ class Controller {
     void handlePageInventory();
     void handlePageGameResult();
     void detectCollision();
+    void fireBullet(int rpm, double velocity);
+    void updateScreen();
+    void updateCursor();
+    void initWeaponAmmo();
 
+    struct Cursor {
+      int y;
+      int yShift;
+    };
 
+    struct Cursor cursor;
+     
   public:
     Controller();
     void gameTick();
@@ -35,4 +65,6 @@ class Controller {
     //test functions
     int get();
 };
+
+double getTime();
 #endif
