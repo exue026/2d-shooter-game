@@ -15,7 +15,7 @@ static enum Pages {
 
 Controller::Controller() {
   lvlNum = 0;
-  spawnSpeed = 1800;
+  spawnSpeed = 1700;
   timeEnterLoading = 0;
   timeLastSpawned = 0;
   timeLastFired = 0;
@@ -29,13 +29,13 @@ Controller::Controller() {
   for (int i = 0; i < switchNum; i++) {
     switchIsOn[i] = 0;
   }
-
-  weapons.push_back(Weapon(83, 20, 0.2, "m1911", -100));  //m1911 - default gun
-  weapons.push_back(Weapon(100, 29, 0.1, "ump", 20)); //ump - unlocked when score is 30
-  weapons.push_back(Weapon(30, 12, 1.2, "AWP", 30)); //AWP
-  weapons.push_back(Weapon(200, 40, 0.4, "AK47", 70)); //ak47
-  weapons.push_back(Weapon(250, 50, 0.3, "famas", 80)); //famas
-  weapons.push_back(Weapon(120, 100, 0.08,"RPK", 100)); //rpk
+  
+  weapons.push_back(Weapon(83, 22, 0.1, "m1911", -100)); 
+  weapons.push_back(Weapon(90, 35, 0.2, "ump", 40));  
+  weapons.push_back(Weapon(30, 12, 1.2, "AWP", 160)); 
+  weapons.push_back(Weapon(200, 40, 0.4, "AK47", 280)); 
+  weapons.push_back(Weapon(250, 50, 0.3, "famas",550)); 
+  weapons.push_back(Weapon(2, 80, 1.4,"OPgun", 999)); 
 
   selectedWeapon = &(weapons[0]);
 
