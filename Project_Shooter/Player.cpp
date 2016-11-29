@@ -1,13 +1,14 @@
 #include "Player.h"
-#include "constants.h"
 
 Player::Player() {
   xpos = 2;
-  yspeed = screenHeight / maxRow;
+  yspeed = ScreenHeight / MaxRow;
   sideLength = 0.6 * yspeed;
-  ypos = screenHeight % maxRow / 2 + (yspeed - sideLength) / 2 + 1;
+  ypos = ScreenHeight % MaxRow / 2 + (yspeed - sideLength) / 2 + 1;
   rowNum = 0;
   score = 0;
+  specialPower = 0;
+  killCount = 0;
 }
 
 int Player::getX() {
@@ -30,8 +31,24 @@ int Player::getScore() {
   return score;
 }
 
+int Player::getSpecialPower() {
+  return specialPower;
+}
+
+int Player::getKillCount() {
+  return killCount;
+}
+
 int Player::addScore(int increment) {
   score += increment;
+
+  //if increment is positive, a target was killed.  Thus, increase kills count.
+  if (increment > 0)
+    killCount++;
+}
+
+int Player::addSpecialPower(int increment) {
+  specialPower += increment;
 }
 
 void Player::moveUp() {
@@ -42,8 +59,20 @@ void Player::moveUp() {
 }
 
 void Player::moveDown() {
-  if (ypos + yspeed <= screenHeight) {
+  if (ypos + yspeed <= ScreenHeight) {
     ypos += yspeed;
     rowNum++;
   }
 }
+
+void Player::resetVariables() {
+  xpos = 2;
+  yspeed = ScreenHeight / MaxRow;
+  sideLength = 0.6 * yspeed;
+  ypos = ScreenHeight % MaxRow / 2 + (yspeed - sideLength) / 2 + 1;
+  rowNum = 0;
+  score = 0;
+  specialPower = 0;
+  killCount = 0;
+}
+

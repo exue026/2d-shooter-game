@@ -1,5 +1,6 @@
-#ifndef _BULLET
-#define _BULLET
+#ifndef BULLET_H
+#define BULLET_H
+
 class Bullet {
   private:
     int rowNum;
@@ -17,3 +18,4 @@ class Bullet {
     double getNextX();
 };
 #endif
+

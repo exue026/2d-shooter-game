@@ -1,8 +1,7 @@
 #include <string>
 
-#ifndef _WEAPON
-#define _WEAPON
-
+#ifndef WEAPON_H
+#define WEAPON_H
 class Weapon {
   private:
     int rpm, magSize;

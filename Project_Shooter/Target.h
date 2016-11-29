@@ -1,5 +1,9 @@
-#ifndef _TARGET
-#define _TARGET
+#include <cstdlib>
+#include "constants.h"
+
+#ifndef TARGET_H
+#define TARGET_H
+
 class Target {
   private:
     int rowNum;
@@ -10,10 +14,10 @@ class Target {
 
   public:
     Target(int levelNum);
-    int getRow();
     void update();
+    int getRow();
     double getX();
-    double getNextX();
     double getY();
+    double getNextX();
 };
 #endif

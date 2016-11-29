@@ -1,66 +1,116 @@
-#include <stdio.h>
-#include <cstring>
 #include "View.h"
-#include "constants.h"
-#include <math.h>
-
 
 View::View() {
   OrbitOledInit();
 }
 
 void View::drawWelcome() {
-
-  for (int i = 5; i < screenWidth - 10; i += 10) {
+  
+  for (int i = 5; i < ScreenWidth - 10; i += 10) {
     OrbitOledMoveTo(i, 5);
     OrbitOledDrawString("~");
-    OrbitOledMoveTo(i, screenHeight - 7);
+    OrbitOledMoveTo(i, ScreenHeight - 7);
     OrbitOledDrawString("~");
   }
+  OrbitOledMoveTo(ScreenWidth / 4, ScreenHeight / 2);
+  OrbitOledDrawString("Welcome!");
+}
 
-  OrbitOledMoveTo(screenWidth / 4 + 2, screenHeight / 2);
-  OrbitOledDrawString("Welcome");
+void View::drawCalib(int calibProgress) {
+  
+  int deviceNum;  //the number code of the devic(switch/button) currently calibrating
+  OrbitOledMoveTo(0, 2);
+  
+  if (calibProgress <= 3) {
+    deviceNum = calibProgress / 2;
+    char msg[13 + 1]; //13 is max length of first row of the messsage, plus 1 for null terminator
+    char deviceNumChar[2];
+    strcpy(msg, "Flip Switch ");
+    sprintf(deviceNumChar, "%d", deviceNum);
+    strcat(msg, deviceNumChar);
+    OrbitOledDrawString(msg);
+    
+    //switch is not used here because of the range of each if statement
+    if (calibProgress % 2 == 0 ) {
+      OrbitOledMoveTo(ScreenWidth / 2 - 10 * 1, 17);
+      OrbitOledDrawString("Up");
+    } else {
+      OrbitOledMoveTo(ScreenWidth / 2 - 10 * 2, 17);
+      OrbitOledDrawString("Down");
+    }
+  } else if (calibProgress <= 7) {
+    deviceNum = calibProgress - 4;
+    char msg[14 + 1]; //14 is the length of the messsage, plus 1 for null terminator
+    char deviceNumChar[2];
+    OrbitOledMoveTo ((ScreenWidth - 10 * 14) / 2, (ScreenHeight - 10) / 2 ); //14 is length of message drawn
+    sprintf(deviceNumChar, "%d", deviceNum);
+    strcpy(msg, "Press Button ");
+    strcat(msg, deviceNumChar);
+    OrbitOledDrawString(msg);
+  } else if (calibProgress == 8) {
+    OrbitOledMoveTo ((ScreenWidth - 10 * 11) / 2, 3);
+    OrbitOledDrawString("Press B0 To");
+    OrbitOledMoveTo ((ScreenWidth - 10 * 9) / 2, 17);
+    OrbitOledDrawString("Calibrate");
+  }
+  else if (calibProgress == 9) {
+    OrbitOledMoveTo ((ScreenWidth - 10 * 9) / 2, 3);
+    OrbitOledDrawString("Finished!");
+    OrbitOledMoveTo (ScreenWidth/5, 17);
+    OrbitOledDrawString("S1 To Play");
+  }
+
 }
 
 void View::drawLoading(int lvlNum) {
-  char msg[9 + lvlNum / 10];
-  char lvl[2 + lvlNum / 10];
-  sprintf(lvl, "%d", lvlNum);
+  
+  int digits = lvlNum > 0 ? (int) log10 ((double) lvlNum) + 1 : 1;
+  char msg[ 7 + digits + 1];  //7 is the length of "Level: "
+  char lvlNumChar[digits + 1];
+  sprintf(lvlNumChar, "%d", lvlNum);
   strcpy(msg, "Level: ");
-  strcat(msg, lvl);
-  OrbitOledMoveTo(screenWidth / 4, screenHeight / 3);
+  strcat(msg, lvlNumChar);
+  OrbitOledMoveTo(ScreenWidth / 4, ScreenHeight / 3);
   OrbitOledDrawString(msg);
 }
 
-
 void View::drawPause(int i, int score) {
-  OrbitOledMoveTo(screenWidth / 6, 0);
+  
+  OrbitOledMoveTo(ScreenWidth / 6, 0);
   if (i)
     OrbitOledDrawString("Game Paused");
-  OrbitOledMoveTo(screenWidth / 5, screenHeight - 22);
-  char scoreMsg[9 + score / 10];
-  char scoreStr[2 + score / 10];
-  sprintf(scoreStr, "%d", score);
+  OrbitOledMoveTo(ScreenWidth / 5, ScreenHeight - 22);
+  int digits = score > 0 ? (int) log10 ((double) score) + 1 : 1;
+  char scoreMsg[7 + digits + 1];
+  char scoreChar[digits + 1];
+  sprintf(scoreChar, "%d", score);
   strcpy(scoreMsg, "Score: ");
-  strcat(scoreMsg, scoreStr);
+  strcat(scoreMsg, scoreChar);
   OrbitOledDrawString(scoreMsg);
-  OrbitOledMoveTo(0, screenHeight - 10);
+  OrbitOledMoveTo(0, ScreenHeight - 10);
   OrbitOledDrawString("S1 for Inventory");
 }
 
-void View::drawInventory(int cursorY, int inventoryPage, vector<Weapon>&weapons) {
+void View::drawInventory(int cursorY, int inventoryPage, int spCount, std::vector<Weapon>&weapons) {
+  
   OrbitOledMoveTo(0, 0);
   OrbitOledDrawString("Inventory");
+  OrbitOledMoveTo(ScreenWidth - 50, 0);
+  OrbitOledDrawString("SP:");
+  int digits = spCount > 0 ? (int) log10 ((double) spCount) + 1 : 1;
+  char numNukes[digits];
+  sprintf(numNukes, "%d", spCount);
+  OrbitOledDrawString(numNukes);
 
   for (int k = 2; k > 0; k--) {
     if (k == 2)
-      OrbitOledMoveTo(screenWidth / 6, 10);
+      OrbitOledMoveTo(ScreenWidth / 6, 10);
     else
-      OrbitOledMoveTo(screenWidth / 6, 10 + screenHeight / 3);
-
+      OrbitOledMoveTo(ScreenWidth / 6, 10 + ScreenHeight / 3);
+      
     if (weapons[(inventoryPage * 2) - k].isUnlocked()) {
       OrbitOledDrawString(weapons[(inventoryPage * 2) - k].name);
-      OrbitOledMoveTo(screenWidth - 65, k == 2 ? 10 : 10 + screenHeight / 3);
+      OrbitOledMoveTo(ScreenWidth - 65, k == 2 ? 10 : 10 + ScreenHeight / 3);
       OrbitOledDrawString("#");
       int digits = weapons[(inventoryPage * 2) - k].getBulletsRemaining() > 0 ? (int) log10 ((double) weapons[(inventoryPage * 2) - k].getBulletsRemaining()) + 1 : 1;
       char ammunition[digits];
@@ -76,14 +126,14 @@ void View::drawInventory(int cursorY, int inventoryPage, vector<Weapon>&weapons)
 
 void View::drawGameEnd(int score) {
 
-  OrbitOledMoveTo(screenWidth / 5, 0);
+  OrbitOledMoveTo(ScreenWidth / 5, 0);
   OrbitOledDrawString("Game Over!!");
   OrbitOledMoveTo(0, 15);
   OrbitOledDrawString("Final score: ");
   int digits = score > 0 ? (int) log10 ((double) score) + 1 : score < 0 ? (int) log10 ((double) - score) + 1 : 1;
   char finalScore[digits];
   sprintf(finalScore, "%d", score);
-  OrbitOledMoveTo(screenWidth - 35, 15);
+  OrbitOledMoveTo(ScreenWidth - 35, 15);
   OrbitOledDrawString(finalScore);
 
 }
@@ -109,7 +159,7 @@ void View::drawBulletCount(int bulletsRemaining) {
   int digits = bulletsRemaining > 0 ? (int) log10 ((double) bulletsRemaining) + 1 : 1;
   char count[digits];
   sprintf(count, "%d", bulletsRemaining);
-  OrbitOledMoveTo(screenWidth - 30, screenHeight - 8);
+  OrbitOledMoveTo(ScreenWidth - 32, ScreenHeight - 8);
   OrbitOledDrawString(count);
 }
 
