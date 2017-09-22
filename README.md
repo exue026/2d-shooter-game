@@ -9,4 +9,4 @@
 • Specific human movements are monitored by an accelerometer and trigger special abilities in game </br>
 • Intelligent enemies that get "smarter" as the game progresses
 
-![Alt text](/images/tiva launchpad microcontroller.png?raw=true "")
+![alt text](https://github.com/exue026/2D-Shooter--The-Marksman/blob/master/images/tiva%20launchpad%20microcontroller.png?raw=true "")
