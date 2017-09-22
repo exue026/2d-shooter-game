@@ -9,3 +9,4 @@
 • Specific human movements are monitored by an accelerometer and trigger special abilities in game </br>
 • Intelligent enemies that get "smarter" as the game progresses
 
+![Alt text](/images/tiva launchpad microcontroller.png?raw=true "")
